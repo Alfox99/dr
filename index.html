@@ -234,6 +234,25 @@ button{font:inherit;color:inherit}
 .toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;max-width:calc(100% - 32px);padding:12px 16px;border-radius:4px;background:var(--ink);color:var(--slide);font-size:14.5px;font-weight:500;box-shadow:var(--shadow);transition:opacity .2s,transform .2s;pointer-events:none;z-index:20}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+.guests{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:2px}
+.guests::-webkit-scrollbar{display:none}
+@media (prefers-reduced-motion: reduce){.guests{scroll-behavior:auto}}
+.guest{flex:0 0 62%;scroll-snap-align:start;border:1px solid var(--line);border-radius:4px;overflow:hidden;display:flex;flex-direction:column;background:var(--slide);min-width:0;transition:border-color .2s}
+@media (min-width:560px){.guest{flex-basis:calc((100% - 24px)/3)}}
+.guest.is-yes{border-color:var(--accent)}
+.guest__ph{position:relative;aspect-ratio:1/1;max-width:100%;background:var(--accent-soft);display:grid;place-items:center;overflow:hidden}
+.guest__ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.guest__ph img.contain{object-fit:contain;padding:8px}
+.guest__ph .ini{font-family:var(--f-display);font-weight:700;font-size:44px;color:var(--accent)}
+.guest__body{padding:10px 10px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.guest__body h3{font-size:15px}
+.guest__btns{display:flex;flex-direction:column;gap:6px;margin-top:auto}
+.guest__btns .btn{width:100%;min-height:38px;padding:6px 10px;font-size:14px}
+.tag--wait{background:var(--soft);color:var(--muted);border:1px solid var(--line);align-self:flex-start}
+.tag--yes{background:var(--accent);color:var(--on-accent);align-self:flex-start}
+.runaway{position:fixed!important;z-index:30;width:auto!important;transition:left .22s cubic-bezier(.2,.9,.3,1.3),top .22s cubic-bezier(.2,.9,.3,1.3);box-shadow:var(--shadow)}
+@media (prefers-reduced-motion: reduce){.runaway{transition:none}}
+.empty-guests{grid-column:1/-1;margin:0;color:var(--muted);font-size:15px}
 .pager{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:18px;border-top:1px dashed var(--line)}
 footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px;display:flex;justify-content:space-between;gap:12px;color:var(--muted)}
 </style>
@@ -253,9 +272,10 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
   </div>
   <nav class="strip" aria-label="Разделы">
     <button type="button" class="tab" data-s="cover" data-go="cover" aria-current="true"><span class="n">1</span>Обложка</button>
-    <button type="button" class="tab" data-s="party" data-go="party"><span class="n">2</span>О празднике</button>
-    <button type="button" class="tab" data-s="dress" data-go="dress"><span class="n">3</span>Что надеть</button>
-    <button type="button" class="tab" data-s="gifts" data-go="gifts"><span class="n">4</span>Что подарить</button>
+    <button type="button" class="tab" data-s="guests" data-go="guests"><span class="n">2</span>Кто будет</button>
+    <button type="button" class="tab" data-s="party" data-go="party"><span class="n">3</span>О празднике</button>
+    <button type="button" class="tab" data-s="dress" data-go="dress"><span class="n">4</span>Что надеть</button>
+    <button type="button" class="tab" data-s="gifts" data-go="gifts"><span class="n">5</span>Что подарить</button>
   </nav>
 </header>
 
@@ -263,7 +283,7 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
 
   <!-- 1. Обложка -->
   <section class="slide" id="cover" aria-labelledby="t-cover">
-    <div class="slide__no"><span class="mono">[ слайд 1 / 4 ]</span><span class="mono">титульный</span></div>
+    <div class="slide__no"><span class="mono">[ слайд 1 / 5 ]</span><span class="mono">титульный</span></div>
     <div class="stage">
     <div class="obj">
       <img src="cover-sticker.webp" width="900" height="907" alt="Маленькая Алиса в праздничном колпаке и тёмных очках, вокруг шары-цифры 25, звёзды и серпантин">
@@ -295,9 +315,28 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
     </div>
   </section>
 
-  <!-- 2. О празднике -->
+  <!-- 2. Кто будет -->
+  <section class="slide" id="guests" aria-labelledby="t-guests">
+    <div class="slide__no"><span class="mono">[ слайд 2 / 5 ]</span><span class="mono">список гостей</span></div>
+    <h2 id="t-guests">Кто будет</h2>
+    <p class="lead">Найди себя в списке и отметь, придёшь ты или нет. Мне важно понимать, сколько нас будет.</p>
+    <div class="count"><strong id="gCount">1</strong><span id="gCountText">уже точно будут</span></div>
+    <div class="ls">
+      <div class="ls-nav">
+        <div class="label">гости</div>
+        <div class="ls-ctrl">
+          <span class="mono ls-count" id="gsCount">1 / 8</span>
+          <button class="ls-arrow" type="button" id="gsPrev" aria-label="Предыдущий гость">←</button>
+          <button class="ls-arrow" type="button" id="gsNext" aria-label="Следующий гость">→</button>
+        </div>
+      </div>
+      <div class="guests" id="guestList" tabindex="0"></div>
+    </div>
+  </section>
+
+  <!-- 3. О празднике -->
   <section class="slide" id="party" aria-labelledby="t-party">
-    <div class="slide__no"><span class="mono">[ слайд 2 / 4 ]</span><span class="mono">повестка</span></div>
+    <div class="slide__no"><span class="mono">[ слайд 3 / 5 ]</span><span class="mono">повестка</span></div>
     <h2 id="t-party">О празднике</h2>
 
     <div>
@@ -366,7 +405,7 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
 
   <!-- 3. Что надеть -->
   <section class="slide" id="dress" aria-labelledby="t-dress">
-    <div class="slide__no"><span class="mono">[ слайд 3 / 4 ]</span><span class="mono">дресс-код</span></div>
+    <div class="slide__no"><span class="mono">[ слайд 4 / 5 ]</span><span class="mono">дресс-код</span></div>
     <h2 id="t-dress" class="dc-title">Офис-кор <span class="acc">с ебанинкой</span></h2>
     <p class="lead">Это не корпоратив, честно. Берём что-нибудь строгое из офисного шкафа и докручиваем одной вещью, которую не пропустил бы ни один дресс-код в мире.</p>
 
@@ -395,7 +434,7 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
 
   <!-- 4. Что подарить -->
   <section class="slide" id="gifts" aria-labelledby="t-gifts">
-    <div class="slide__no"><span class="mono">[ слайд 4 / 4 ]</span><span class="mono">вишлист</span></div>
+    <div class="slide__no"><span class="mono">[ слайд 5 / 5 ]</span><span class="mono">вишлист</span></div>
     <h2 id="t-gifts">Что подарить</h2>
     <p class="note">Ребята, в этом году прошу дарить подарки <b>от 2 500–3 000 ₽</b>. Зал, еду и торт я беру на себя, и без этого правила просто уйду в минус. Спасибо за понимание!</p>
     <p class="lead">Занимай подарок прямо на сайте. Я не вижу, кто что занял, видно только, что лот занят. Деньги и сертификаты в магазины можно дарить без брони.</p>
@@ -573,6 +612,7 @@ async function unclaim(id){
 /* ===== Отрисовка списка ===== */
 const listEl = document.getElementById("giftList");
 function render(){
+  renderGuests();
   listEl.textContent = "";
   const shown = GIFTS.filter(g => (state.filter==="all" || g.t===state.filter) && !(state.hideTaken && state.claims[g.id] && !state.mine[g.id]));
   if(!shown.length){
@@ -728,8 +768,8 @@ function tick(){
 tick(); setInterval(tick, 60000);
 
 /* ===== Навигация: вкладки-слайды ===== */
-const VIEWS = ["cover","party","dress","gifts"];
-const TITLES = {cover:"Обложка", party:"О празднике", dress:"Что надеть", gifts:"Что подарить"};
+const VIEWS = ["cover","guests","party","dress","gifts"];
+const TITLES = {cover:"Обложка", guests:"Кто будет", party:"О празднике", dress:"Что надеть", gifts:"Что подарить"};
 const links = [...document.querySelectorAll(".strip .tab")];
 const slides = VIEWS.map(id => document.getElementById(id));
 
@@ -748,6 +788,7 @@ slides.forEach((s, i) => {
 });
 
 function show(view, fromUser){
+  resetRunaways();
   if(!VIEWS.includes(view)) view = "cover";
   slides.forEach(s => { s.hidden = s.id !== view; });
   links.forEach(a => a.setAttribute("aria-current", String(a.dataset.s === view)));
@@ -809,6 +850,125 @@ lsTrack.addEventListener("keydown", e => {
 });
 document.addEventListener("click", e => { if(e.target.closest('[data-go="dress"]')) setTimeout(lsUpdate, 50); });
 lsUpdate();
+
+/* ===== Кто будет ===== */
+// img: путь к фото рядом с сайтом, например "guests/masha.webp"
+const GUESTS = [
+  {id:"denis",   name:"Денис", img:"guests/denis.webp", sticker:true},
+  {id:"serega",  name:"Серёга", img:"guests/serega.webp", sticker:true},
+  {id:"dianych", name:"Дианыч", img:"guests/dianych.webp", sticker:true},
+  {id:"nastya",  name:"Настя", img:"guests/nastya.webp", sticker:true},
+  {id:"lena",    name:"Лена", img:"guests/lena.webp", sticker:true},
+  {id:"regina",  name:"Регина", img:"guests/regina.webp", sticker:true},
+  {id:"plusone", name:"Кто-то ещё?", mark:"?", extra:true, hello:"незнакомец"}
+];
+const HOST = {id:"alisa", name:"Алиса", img:"cover-sticker.webp", host:true};
+const NO_LABELS = ["Не буду","Точно?","Подумай ещё","Не-а","Не поймаешь","Ну правда","Сдавайся","Ладно, жми «Я буду»"];
+const rsvpKey = g => "rsvp-" + g.id;
+
+function renderGuests(){
+  const list = document.getElementById("guestList");
+  if(!list) return;
+  list.textContent = "";
+  let yes = 1;
+  [HOST, ...GUESTS].forEach(g => {
+    const key = rsvpKey(g);
+    const going = g.host || !!state.claims[key];
+    const mine = !!state.mine[key];
+    if(!g.host && going) yes++;
+    const card = document.createElement("article"); card.className = "guest" + (going ? " is-yes" : ""); card.id = "gst-" + g.id;
+    const ph = document.createElement("div"); ph.className = "guest__ph";
+    if(g.img){ const im = document.createElement("img"); im.src = g.img; im.alt = g.name; if(g.host || g.sticker) im.className = "contain"; ph.appendChild(im); }
+    else { const ini = document.createElement("span"); ini.className = "ini"; ini.textContent = g.mark || g.name.slice(0,1).toUpperCase(); ph.appendChild(ini); }
+    const body = document.createElement("div"); body.className = "guest__body";
+    const h = document.createElement("h3"); h.textContent = g.name;
+    const tag = document.createElement("span");
+    tag.className = "tag " + (going ? "tag--yes" : "tag--wait");
+    tag.textContent = g.host ? "Именинница" : (going ? "Будет ✓" : "Ждём ответа");
+    body.append(h, tag);
+    if(!g.host){
+      const btns = document.createElement("div"); btns.className = "guest__btns";
+      if(!going){
+        const y = document.createElement("button"); y.type = "button"; y.className = "btn btn--accent";
+        y.textContent = state.busy[key] ? "Отмечаю…" : "Я буду"; y.disabled = !!state.busy[key];
+        y.addEventListener("click", () => rsvp(g, true));
+        const n = document.createElement("button"); n.type = "button"; n.className = "btn btn--ghost no-btn"; n.textContent = NO_LABELS[0];
+        n.dataset.tries = "0";
+        n.addEventListener("click", e => { e.preventDefault(); runAway(n); });
+        btns.append(y, n);
+      } else if(mine){
+        const u = document.createElement("button"); u.type = "button"; u.className = "undo";
+        u.textContent = state.busy[key] ? "Снимаю…" : "Ой, это не я";
+        u.addEventListener("click", () => rsvp(g, false));
+        btns.append(u);
+      }
+      body.append(btns);
+    }
+    card.append(ph, body); list.appendChild(card);
+  });
+  if(!GUESTS.length){
+    const p = document.createElement("p"); p.className = "empty-guests"; p.textContent = "Карточки гостей появятся совсем скоро.";
+    list.appendChild(p);
+  }
+  const total = GUESTS.filter(g => !g.extra || state.claims[rsvpKey(g)]).length + 1;
+  document.getElementById("gCount").textContent = yes;
+  document.getElementById("gCountText").textContent = `из ${total} уже точно будут`;
+  if(typeof gsUpdate === "function") requestAnimationFrame(() => { try{ gsUpdate(); }catch(e){} });
+}
+
+const gsTrack = document.getElementById("guestList");
+const gsPrev = document.getElementById("gsPrev"), gsNext = document.getElementById("gsNext"), gsCount = document.getElementById("gsCount");
+function gsStep(){ const c = gsTrack.querySelector(".guest"); return c ? c.getBoundingClientRect().width + 12 : 1; }
+function gsUpdate(){
+  const n = gsTrack.querySelectorAll(".guest").length;
+  const i = Math.round(gsTrack.scrollLeft / gsStep());
+  gsCount.textContent = `${Math.min(i+1, n)} / ${n}`;
+  gsPrev.disabled = gsTrack.scrollLeft < 4;
+  gsNext.disabled = gsTrack.scrollLeft + gsTrack.clientWidth >= gsTrack.scrollWidth - 4;
+}
+gsPrev.addEventListener("click", () => gsTrack.scrollBy({left: -gsStep()}));
+gsNext.addEventListener("click", () => gsTrack.scrollBy({left: gsStep()}));
+gsTrack.addEventListener("scroll", () => requestAnimationFrame(gsUpdate), {passive:true});
+gsTrack.addEventListener("keydown", e => {
+  if(e.target !== gsTrack) return;
+  if(e.key === "ArrowRight"){ e.preventDefault(); gsTrack.scrollBy({left: gsStep()}); }
+  if(e.key === "ArrowLeft"){ e.preventDefault(); gsTrack.scrollBy({left: -gsStep()}); }
+});
+document.addEventListener("click", e => { if(e.target.closest('[data-go="guests"]')) setTimeout(gsUpdate, 50); });
+
+function runAway(btn){
+  const tries = (+btn.dataset.tries || 0) + 1;
+  btn.dataset.tries = tries;
+  btn.textContent = NO_LABELS[Math.min(tries, NO_LABELS.length - 1)];
+  btn.classList.add("runaway");
+  const bar = document.querySelector(".bar").getBoundingClientRect().bottom;
+  const w = btn.offsetWidth || 140, h = btn.offsetHeight || 40, pad = 12;
+  const maxX = Math.max(pad, innerWidth - w - pad), minY = bar + pad, maxY = Math.max(minY, innerHeight - h - pad);
+  let x, y, r = btn.getBoundingClientRect();
+  do { x = pad + Math.random()*(maxX - pad); y = minY + Math.random()*(maxY - minY); }
+  while(Math.hypot(x - r.left, y - r.top) < 120 && Math.random() < .9);
+  btn.style.left = x + "px"; btn.style.top = y + "px";
+}
+function resetRunaways(){
+  document.querySelectorAll(".runaway").forEach(b => { b.classList.remove("runaway"); b.style.left = b.style.top = ""; b.textContent = NO_LABELS[0]; b.dataset.tries = "0"; });
+}
+
+async function rsvp(g, going){
+  const key = rsvpKey(g);
+  if(state.busy[key]) return;
+  state.busy[key] = true; render();
+  try{
+    const res = await send(going ? "claim" : "unclaim", key);
+    if(res.claims) state.claims = res.claims;
+    if(res.ok){
+      if(going){ state.mine[key] = true; toast(`Ура, ${g.hello || g.name}! Ждём тебя 13 декабря 🎉`); }
+      else { delete state.mine[key]; toast("Отметку сняли"); }
+      saveMine();
+    } else if(res.error === "taken"){ toast("Тебя уже отметили 👀"); }
+    else { toast("Не получилось. Попробуй ещё раз"); }
+  }catch(e){ toast("Нет связи. Попробуй ещё раз"); }
+  state.busy[key] = false; render();
+}
 
 /* ===== Тост ===== */
 let toastTimer;

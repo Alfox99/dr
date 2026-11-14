@@ -274,8 +274,8 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
     <button type="button" class="tab" data-s="cover" data-go="cover" aria-current="true"><span class="n">1</span>Обложка</button>
     <button type="button" class="tab" data-s="guests" data-go="guests"><span class="n">2</span>Кто будет</button>
     <button type="button" class="tab" data-s="party" data-go="party"><span class="n">3</span>О празднике</button>
-    <button type="button" class="tab" data-s="dress" data-go="dress"><span class="n">4</span>Что надеть</button>
-    <button type="button" class="tab" data-s="gifts" data-go="gifts"><span class="n">5</span>Что подарить</button>
+    <button type="button" class="tab" data-s="dress" data-go="dress"><span class="n">4</span>Че надеть</button>
+    <button type="button" class="tab" data-s="gifts" data-go="gifts"><span class="n">5</span>Че подарить</button>
   </nav>
 </header>
 
@@ -293,7 +293,7 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
       <span class="hd tl" aria-hidden="true"></span><span class="hd tc" aria-hidden="true"></span><span class="hd tr" aria-hidden="true"></span>
       <span class="hd ml" aria-hidden="true"></span><span class="hd mr" aria-hidden="true"></span>
       <span class="hd bl" aria-hidden="true"></span><span class="hd bc" aria-hidden="true"></span><span class="hd br" aria-hidden="true"></span>
-      <h1 id="t-cover">День рождения <span class="acc">Алисы</span><span class="caret" aria-hidden="true"></span></h1>
+      <h1 id="t-cover">День рождения <span class="acc">Алиски</span><span class="caret" aria-hidden="true"></span></h1>
     </div>
     <span class="tip mono">подробности</span>
 
@@ -435,7 +435,7 @@ footer{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-l
   <!-- 4. Что подарить -->
   <section class="slide" id="gifts" aria-labelledby="t-gifts">
     <div class="slide__no"><span class="mono">[ слайд 5 / 5 ]</span><span class="mono">вишлист</span></div>
-    <h2 id="t-gifts">Что подарить</h2>
+    <h2 id="t-gifts">Че подарить</h2>
     <p class="note">Ребята, в этом году прошу дарить подарки <b>от 2 500–3 000 ₽</b>. Зал, еду и торт я беру на себя, и без этого правила просто уйду в минус. Спасибо за понимание!</p>
     <p class="lead">Занимай подарок прямо на сайте. Я не вижу, кто что занял, видно только, что лот занят. Деньги и сертификаты в магазины можно дарить без брони.</p>
 
@@ -769,7 +769,7 @@ tick(); setInterval(tick, 60000);
 
 /* ===== Навигация: вкладки-слайды ===== */
 const VIEWS = ["cover","guests","party","dress","gifts"];
-const TITLES = {cover:"Обложка", guests:"Кто будет", party:"О празднике", dress:"Что надеть", gifts:"Что подарить"};
+const TITLES = {cover:"Обложка", guests:"Кто будет", party:"О празднике", dress:"Че надеть", gifts:"Че подарить"};
 const links = [...document.querySelectorAll(".strip .tab")];
 const slides = VIEWS.map(id => document.getElementById(id));
 
